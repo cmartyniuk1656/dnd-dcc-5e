@@ -11,9 +11,9 @@
     "systems": [{ "id": "dnd5e", "type": "system", "compatibility": { "minimum": "3" } }],
     "requires": [{ "id": "lib-wrapper", "type": "module" }]
   },
-  "url": "https://example.com",
-  "manifest": "https://example.com/module.json",
-  "download": "https://example.com/module.zip",
+  "url": "https://github.com/cmartyniuk1656/dnd-dcc-5e",
+  "manifest": "https://raw.githubusercontent.com/cmartyniuk1656/dnd-dcc-5e/main/module.json",
+  "download": "https://github.com/cmartyniuk1656/dnd-dcc-5e/releases/download/v0.1.0/dcc-dnd5e-extension-v0.1.0.zip",
   "scripts": [],
   "languages": [],
   "packs": [],

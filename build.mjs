@@ -1,7 +1,7 @@
 import * as esbuild from "esbuild";
 import archiver from "archiver";
 import { createWriteStream, constants } from "node:fs";
-import { access, copyFile, mkdir } from "node:fs/promises";
+import { access, copyFile, mkdir, readFile } from "node:fs/promises";
 import path from "node:path";
 
 const watchMode = process.argv.includes("--watch");
@@ -10,7 +10,11 @@ const distDir = path.join(projectRoot, "dist");
 const stylesDir = path.join(projectRoot, "styles");
 const cssSource = path.join(projectRoot, "src", "dcc.css");
 const cssTarget = path.join(stylesDir, "dcc.css");
-const zipTarget = path.join(projectRoot, "dcc-dnd5e-extension.zip");
+const packageJsonPath = path.join(projectRoot, "package.json");
+const packageJson = JSON.parse(await readFile(packageJsonPath, "utf8"));
+const versionTag = `v${packageJson.version ?? "0.0.0"}`;
+const zipName = `dcc-dnd5e-extension-${versionTag}.zip`;
+const zipTarget = path.join(projectRoot, zipName);
 
 async function buildScript() {
   const context = await esbuild.context({

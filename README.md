@@ -62,8 +62,8 @@ npm run watch     # rebuild on changes (JS + CSS)
 
 ### Packaging for testing
 
-1. Run `npm run build` to refresh `dist/`, `styles/`, and generate `dcc-dnd5e-extension.zip`.
-2. Upload `dcc-dnd5e-extension.zip` (contains `module.json`, `dist/`, `styles/`, `templates/`) to your Foundry server.
+1. Run `npm run build` to refresh `dist/`, `styles/`, and generate `dcc-dnd5e-extension-v<version>.zip`.
+2. Upload the generated zip (contains `module.json`, `dist/`, `styles/`, `templates/`) to your Foundry server.
 3. Unzip it under `FoundryVTT/Data/modules`, then enable in Foundry.
 
 ## Extending
@@ -98,7 +98,7 @@ The module merges `flags.dcc` into roll data and the optional sheet.
 
 ## License
 
-This project still needs a license before public release (MIT is a common Foundry default).
+Released under the [MIT License](LICENSE).
 
 ## Credits
 
