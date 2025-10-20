@@ -1,0 +1,21 @@
+{
+  "id": "dcc-dnd5e-extension",
+  "title": "DCC - dnd5e Extension",
+  "description": "Adds Dungeon Crawler Carl-inspired secondary stats to dnd5e sheets and roll data.",
+  "authors": [{ "name": "Chris Martyniuk" }],
+  "version": "0.1.0",
+  "compatibility": { "minimum": "12", "verified": "12" },
+  "esmodules": ["./dist/dcc.js"],
+  "styles": ["./styles/dcc.css"],
+  "relationships": {
+    "systems": [{ "id": "dnd5e", "type": "system", "compatibility": { "minimum": "3" } }],
+    "requires": [{ "id": "lib-wrapper", "type": "module" }]
+  },
+  "url": "https://example.com",
+  "manifest": "https://example.com/module.json",
+  "download": "https://example.com/module.zip",
+  "scripts": [],
+  "languages": [],
+  "packs": [],
+  "socket": false
+}
