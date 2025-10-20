@@ -86,36 +86,38 @@ Hooks.once("ready", async () => {
 
 // --- Sheet subclass -------------------------------------------------------
 
-class CharacterSheetDCC extends (dnd5e.applications.actor.ActorSheet5eCharacter as any) {
+class CharacterSheetDCC extends (dnd5e.applications.actor.CharacterActorSheet as any) {
   static override get defaultOptions() {
     const opts = super.defaultOptions;
     opts.classes = [...(opts.classes ?? []), "dcc-sheet"];
-    opts.tabs = opts.tabs ?? [];
     return opts;
   }
 
-  /** Extend the dnd5e template with our DCC tab via Handlebars partial */
-  override async _renderInner(data: any, options: any) {
-    const html = await super._renderInner(data, options);
+  static override get PARTS() {
+    const parts = structuredClone(super.PARTS);
+    parts.tabs ??= { id: "tabs", template: parts.tabs?.template ?? parts.tabs?.template ?? "systems/dnd5e/templates/shared/sidebar-tabs.hbs" };
+    parts.dcc = {
+      container: { id: "tabs", classes: ["tab-body"] },
+      template: `modules/${MODULE_ID}/templates/actor-dcc-tab.hbs`,
+      classes: ["tab", "dcc-pane"],
+      scrollable: [""]
+    };
+    return parts;
+  }
 
-    const nav = html[0]?.querySelector?.(".sheet-navigation .tabs");
-    const body = html[0]?.querySelector?.(".tab-body");
-    if (nav && body && !html[0].querySelector("#dcc-tab")) {
-      const li = document.createElement("a");
-      li.classList.add("item");
-      li.dataset.tab = "dcc";
-      li.textContent = "DCC";
-      nav.appendChild(li);
+  static override get TABS() {
+    return [...(super.TABS ?? []), { tab: "dcc", label: "DCC", icon: "fas fa-bolt" }];
+  }
 
-      const pane = document.createElement("section");
-      pane.classList.add("tab", "dcc-pane");
-      pane.dataset.tab = "dcc";
-      pane.id = "dcc-tab";
-      pane.innerHTML = await renderTemplate(`modules/${MODULE_ID}/templates/actor-dcc-tab.hbs`, data);
-      body.appendChild(pane);
-    }
+  tabGroups = {
+    ...super.tabGroups,
+    primary: super.tabGroups?.primary ?? "details"
+  };
 
-    return html;
+  override _onChangeTab(event: Event, tabs: Tabs, active: string) {
+    super._onChangeTab(event, tabs, active);
+    this.tabGroups.primary = active;
+    this.options.tab = active;
   }
 
   /** Provide template context that includes @dcc defaults for rendering */
@@ -132,16 +134,15 @@ class CharacterSheetDCC extends (dnd5e.applications.actor.ActorSheet5eCharacter 
     return context;
   }
 
-  /** Save changes from the DCC tab inputs back into flags.dcc */
   override async _updateObject(event: Event, formData: Record<string, unknown>) {
-    const dccUpdates: Record<string, unknown> = {};
-    for (const [key, value] of Object.entries(formData)) {
-      if (key.startsWith("flags.dcc.")) {
-        dccUpdates[key] = value === "" ? 0 : Number(value);
+    const updates = Object.entries(formData).filter(([key]) => key.startsWith("flags.dcc."));
+    if (updates.length) {
+      const expanded = foundry.utils.expandObject(Object.fromEntries(updates));
+      const dcc = foundry.utils.getProperty(expanded, "flags.dcc");
+      if (dcc) {
+        await (this as any).actor.update({ "flags.dcc": dcc });
       }
-    }
-    if (Object.keys(dccUpdates).length) {
-      await (this as any).actor.update(dccUpdates);
+      for (const [key] of updates) delete formData[key];
     }
     return super._updateObject(event, formData);
   }

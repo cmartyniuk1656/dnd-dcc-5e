@@ -16,21 +16,6 @@ const versionTag = `v${packageJson.version ?? "0.0.0"}`;
 const zipName = `dcc-dnd5e-extension-${versionTag}.zip`;
 const zipTarget = path.join(projectRoot, zipName);
 
-async function buildScript() {
-  const context = await esbuild.context({
-    entryPoints: ["src/dcc.ts"],
-    bundle: true,
-    format: "esm",
-    sourcemap: true,
-    target: "es2022",
-    outfile: "dist/dcc.js",
-    logLevel: "info"
-  });
-
-  await context.rebuild();
-  return context;
-}
-
 async function copyCss() {
   await mkdir(stylesDir, { recursive: true });
   await copyFile(cssSource, cssTarget);
@@ -88,44 +73,50 @@ async function packageModule() {
 }
 
 async function main() {
+  const esbuildOptions = {
+    entryPoints: ["src/dcc.ts"],
+    bundle: true,
+    format: "esm",
+    sourcemap: true,
+    target: "es2022",
+    outfile: "dist/dcc.js",
+    logLevel: "info"
+  };
+
   await mkdir(distDir, { recursive: true });
-  const context = await buildScript();
-  await copyCss();
-  await packageModule();
+
+  const buildOnce = async () => {
+    await esbuild.build(esbuildOptions);
+    await copyCss();
+    await packageModule();
+  };
+
+  await buildOnce();
 
   if (watchMode) {
     console.log("Watching for changes...");
-    await context.watch({
-      async onRebuild(error) {
-        if (error) {
-          console.error("Build failed:", error);
-          return;
-        }
-        try {
-          await copyCss();
-          await packageModule();
-        } catch (err) {
-          console.error("Post-build step failed:", err);
-        }
-      }
-    });
-
-    const watcher = (await import("node:fs")).watch;
-    watcher(cssSource, async (eventType) => {
-      if (eventType !== "change") return;
-      try {
-        await copyCss();
-        await packageModule();
-      } catch (err) {
-        console.error("Failed to process CSS change:", err);
-      }
-    });
+    esbuild
+      .context(esbuildOptions)
+      .then(async (ctx) => {
+        await ctx.watch();
+        const watcher = (await import("node:fs")).watch;
+        watcher(cssSource, async (eventType) => {
+          if (eventType !== "change") return;
+          try {
+            await copyCss();
+            await packageModule();
+          } catch (err) {
+            console.error("Failed to process CSS change:", err);
+          }
+        });
+      })
+      .catch((err) => {
+        console.error("Failed to start watch mode:", err);
+        process.exit(1);
+      });
   } else {
-    await context.dispose();
     console.log("Build complete.");
   }
-
-  return context;
 }
 
 main().catch((err) => {

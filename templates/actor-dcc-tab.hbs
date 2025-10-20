@@ -1,37 +1,39 @@
-<div class="form-grid two-column">
-  <div class="form-group">
-    <label>Audience</label>
-    <input type="number" name="flags.dcc.audience" value="{{dcc.audience}}" step="1" />
-    <p class="hint">Crowd noise - advantage triggers, spectacle meters.</p>
+<section class="tab dcc-pane {{tab.cssClass}}" data-group="{{#if tab}}{{tab.group}}{{else}}primary{{/if}}" data-tab="{{#if tab}}{{tab.id}}{{else}}dcc{{/if}}">
+  <div class="form-grid two-column">
+    <div class="form-group">
+      <label>Audience</label>
+      <input type="number" data-dtype="Number" name="flags.dcc.audience" value="{{dcc.audience}}" step="1" />
+      <p class="hint">Crowd noise - advantage triggers, spectacle meters.</p>
+    </div>
+    <div class="form-group">
+      <label>Hype</label>
+      <input type="number" data-dtype="Number" name="flags.dcc.hype" value="{{dcc.hype}}" step="1" />
+      <p class="hint">Add to initiative, damage riders, or recharge stunts.</p>
+    </div>
+    <div class="form-group">
+      <label>Style</label>
+      <input type="number" data-dtype="Number" name="flags.dcc.style" value="{{dcc.style}}" step="1" />
+      <p class="hint">Crit flourish, social swagger, stunt DCs.</p>
+    </div>
+    <div class="form-group">
+      <label>Grit</label>
+      <input type="number" data-dtype="Number" name="flags.dcc.grit" value="{{dcc.grit}}" step="1" />
+      <p class="hint">Temp HP and death save perks between floors.</p>
+    </div>
   </div>
-  <div class="form-group">
-    <label>Hype</label>
-    <input type="number" name="flags.dcc.hype" value="{{dcc.hype}}" step="1" />
-    <p class="hint">Add to initiative, damage riders, or recharge stunts.</p>
-  </div>
-  <div class="form-group">
-    <label>Style</label>
-    <input type="number" name="flags.dcc.style" value="{{dcc.style}}" step="1" />
-    <p class="hint">Crit flourish, social swagger, stunt DCs.</p>
-  </div>
-  <div class="form-group">
-    <label>Grit</label>
-    <input type="number" name="flags.dcc.grit" value="{{dcc.grit}}" step="1" />
-    <p class="hint">Temp HP and death save perks between floors.</p>
-  </div>
-</div>
 
-<hr />
+  <hr />
 
-<div class="form-group">
-  <label>Provenance</label>
-  <select name="flags.dcc.provenance">
-    <option value="synthesized" {{#if (eq dcc.provenance "synthesized")}}selected{{/if}}>Synthesized</option>
-    <option value="api" {{#if (eq dcc.provenance "api")}}selected{{/if}}>DCC API</option>
-  </select>
-</div>
+  <div class="form-group">
+    <label>Provenance</label>
+    <select name="flags.dcc.provenance">
+      <option value="synthesized" {{#if (eq dcc.provenance "synthesized")}}selected{{/if}}>Synthesized</option>
+      <option value="api" {{#if (eq dcc.provenance "api")}}selected{{/if}}>DCC API</option>
+    </select>
+  </div>
 
-<p class="notes">
-  These values are available to roll formulas as <code>@dcc.*</code>. Example: add
-  <code>+ floor(@dcc.hype/2)</code> to melee damage.
-</p>
+  <p class="notes">
+    These values are available to roll formulas as <code>@dcc.*</code>.
+    Example: add <code>+ floor(@dcc.hype/2)</code> to melee damage.
+  </p>
+</section>
